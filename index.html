@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+canvas {
+  border: 2px solid black;
+  /* padding: 30px; */
+  margin: 20px;
+}
+.darkmod{
+  background-color: black;
+  color: white;
+  transition: 1s;
+}
+@media (max-width: 480px) {
+  canvas{
+    background-color: rgb(255, 255, 255);
+    z-index: 1002;
+  }
+  body{
+    display: flex;
+    flex-direction: column;
+  }
+}
+    </style>
+  </head>
+  <body>
+    <!-- <h2>signature pad</h2> -->
+    <canvas id="canvas" width="300" height="150" aria-placeholder="hello"></canvas>
+    <button id="clear">Clear</button>
+    <button id="Download">GO</button>
+    <button onclick="darkmod()">Dark Mod</button>
+
+  </body>
+  <script>
+var btn = document.getElementById('btn')
+    var canvas = document.getElementById("canvas");
+    var content = canvas.getContext("2d");
+    var clear = document.getElementById("clear");
+    var Download =document.getElementById("Download");
+
+    // get the relative position of the cursor in canvas
+    var rect = canvas.getBoundingClientRect();
+
+  function darkmod(){
+    document.body.classList.toggle("darkmod");
+  }
+
+    //defining positions
+    var isDrawing = false;
+    var lastx = "";
+    var lasty = "";
+
+    //track
+    canvas.addEventListener("mousedown", (e) => {
+      console.log("mousedown");
+      isDrawing = true;
+      //
+      var offsetX = e.clientX - rect.left; // Adjust offsetX based on canvas position
+      var offsetY = e.clientY - rect.top; // Adjust offsetY based on canvas position
+      content.beginPath();
+      content.moveTo(offsetX, offsetY);
+      //
+      [lastx, lasty] = [e.offsetX, e.offsetY];
+    });
+    canvas.addEventListener("mousemove", (e) => {
+      if (isDrawing) {
+//
+var offsetX = e.clientX - rect.left; // Adjust offsetX based on canvas position
+var offsetY = e.clientY - rect.top; // Adjust offsetY based on canvas position
+//
+
+        var currentX = e.offsetX;
+        var currentY = e.offsetY;
+        console.log("current position"+ currentX, currentY);
+        console.log("Offset position"+ offsetX, offsetY);
+
+
+        content.beginPath();
+        content.moveTo(lastx, lasty);
+        content.lineTo(currentX, currentY);
+        content.strokeStyle = "black";
+        content.lineWidth = 3;
+        content.stroke();
+        [lastx, lasty] = [currentX, currentY];
+      }
+    });
+    canvas.addEventListener("mouseup", () => {
+      isDrawing = false;
+    });
+    canvas.addEventListener("mouseout", () => {
+      isDrawing = false;
+    });
+    clear.addEventListener("click", function () {
+      content.clearRect(0, 0, canvas.width, canvas.height);
+    });
+
+    Download.addEventListener("click", function () {
+        console.log("Download finished")
+        var link = document.createElement("a");
+        link.setAttribute('download','Signature.png')
+        link.setAttribute('href', canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream'));
+        link.click();
+    })
+
+    console.log(canvas);
+  </script>
+</html>
